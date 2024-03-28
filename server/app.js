@@ -21,7 +21,6 @@ io.on("connection", (socket) => {
     console.log("User connected: " + socket.id)
     
     socket.on("send_message", (data) => {
-
         socket.broadcast.emit("recieve_message", data);
     })
 })
@@ -44,6 +43,5 @@ app.post("/login", async (req, res) => {
     else
         return res.status(400).send("Incorrect password")
 })
-
 
 server.listen(3001, () => console.log("Server is listening"));
