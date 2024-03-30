@@ -31,7 +31,7 @@ console.log(res)
 =======
 
 export const createUser = async (name, password) => {
-    const [ res ] = await pool.quert(`INSERT INTO Users (username, password) VALUES ("${name}", "${password}")`)
+    const [ res ] = await pool.query(`INSERT INTO Users (username, password) VALUES ("${name}", "${password}")`)
     return (res);
 }
 >>>>>>> 45ec09b (Add very basic functionalities for register and login along with endpoints)
