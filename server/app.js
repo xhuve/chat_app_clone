@@ -1,6 +1,10 @@
 import Express from "express"
 import http from 'http'
+<<<<<<< HEAD
 import { getUser, createUser } from "./database.js"
+=======
+import { getUser } from "./database.js"
+>>>>>>> 45ec09b (Add very basic functionalities for register and login along with endpoints)
 import { Server } from 'socket.io'
 import cors from 'cors'
 
@@ -26,11 +30,22 @@ io.on("connection", (socket) => {
 })
 
 app.post("/register", async (req, res) => {
-    const user = await createUser(req.body.username, req.body.password);
+    const user = await createUser("billy");
     if (!user)
-        return res.status(400).send("Problem creating user")
+        return Bad("Problem creating user")
 
-    return res.status(200).json(user);
+    return Ok(user);
+})
+
+app.post("/login", async (req, res) => {
+    const user = await getUser("billy");
+    if (!user)
+        return Bad("User not found")
+
+    if (req.password == user.password)
+        return Ok(user);
+    else
+        return Bad("Incorrect password")
 })
 
 app.post("/login", async (req, res) => {
