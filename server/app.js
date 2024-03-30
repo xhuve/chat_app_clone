@@ -1,10 +1,11 @@
 import Express from "express"
 import http from 'http'
-import { getUser } from "./database.js"
+import { getUser, createUser } from "./database.js"
 import { Server } from 'socket.io'
 import cors from 'cors'
 
 const app = Express();
+app.use(Express.json())
 app.use(cors())
 
 const server = http.createServer(app);
@@ -25,22 +26,22 @@ io.on("connection", (socket) => {
 })
 
 app.post("/register", async (req, res) => {
-    const user = await createUser("billy");
+    const user = await createUser(req.body.username, req.body.password);
     if (!user)
-        return Bad("Problem creating user")
+        return res.status(400).send("Problem creating user")
 
-    return Ok(user);
+    return res.status(200).json(user);
 })
 
 app.post("/login", async (req, res) => {
-    const user = await getUser("billy");
+    const user = await getUser(req.body.username);
     if (!user)
-        return Bad("User not found")
+        return res.status(400).send("User not found")
 
     if (req.password == user.password)
-        return Ok(user);
+        return res.status(200).json(user);
     else
-        return Bad("Incorrect password")
+        return res.status(400).send("Incorrect password")
 })
 
 
