@@ -7,6 +7,14 @@ const pool = mysql.createPool({
     database: "ChatApp"
 }).promise();
 
-const res = await pool.query("SELECT * FROM Users")
+export const getUser = async (name) => {
+    const [ res ] = await pool.query(`SELECT * FROM Users WHERE username = "${name}"`)
+    if (!res)
+        return ("error")
+    return (res);
+}
 
-console.log(res)
+export const createUser = async (name, password) => {
+    const [ res ] = await pool.quert(`INSERT INTO Users (username, password) VALUES ("${name}", "${password}")`)
+    return (res);
+}

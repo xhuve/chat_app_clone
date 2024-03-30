@@ -1,5 +1,6 @@
 import Express from "express"
 import http from 'http'
+import { getUser } from "./database.js"
 import { Server } from 'socket.io'
 import cors from 'cors'
 
@@ -23,7 +24,24 @@ io.on("connection", (socket) => {
     })
 })
 
+app.post("/register", async (req, res) => {
+    const user = await createUser("billy");
+    if (!user)
+        return Bad("Problem creating user")
 
+    return Ok(user);
+})
+
+app.post("/login", async (req, res) => {
+    const user = await getUser("billy");
+    if (!user)
+        return Bad("User not found")
+
+    if (req.password == user.password)
+        return Ok(user);
+    else
+        return Bad("Incorrect password")
+})
 
 
 server.listen(3001, () => console.log("Server is listening"));
