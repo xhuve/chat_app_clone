@@ -3,6 +3,7 @@ import http from 'http'
 import { getUser, createUser } from "./database.js"
 import { Server } from 'socket.io'
 import cors from 'cors'
+import bcrypt from 'bcrypt';
 
 const app = Express();
 app.use(Express.json())
@@ -26,7 +27,15 @@ io.on("connection", (socket) => {
 })
 
 app.post("/register", async (req, res) => {
-    const user = await createUser(req.body.username, req.body.password);
+    
+    const hashedPass = await bcrypt.hash(req.body.password, 10, (err, hash) => {
+        if (err){
+            res.status(400).send("Problem creating account", err)
+        }
+        return hash;
+    })
+
+    const user = await createUser(req.body.username, hashedPass);
     if (!user)
         return res.status(400).send("Problem creating user")
 
