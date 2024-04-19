@@ -26,20 +26,18 @@ io.on("connection", (socket) => {
     })
 })
 
-app.post("/register", async (req, res) => {
+app.post("/register", (req, res) => {
     
-    const hashedPass = await bcrypt.hash(req.body.password, 10, (err, hash) => {
+    bcrypt.hash(req.body.password, 10, async (err, hash) => {
         if (err){
             res.status(400).send("Problem creating account", err)
         }
-        return hash;
+        const user = await createUser(req.body.username, hash);
+        if (!user)
+            return res.status(400).send("Problem creating user")
+
+        return res.status(200).json(user);
     })
-
-    const user = await createUser(req.body.username, hashedPass);
-    if (!user)
-        return res.status(400).send("Problem creating user")
-
-    return res.status(200).json(user);
 })
 
 app.post("/login", async (req, res) => {
