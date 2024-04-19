@@ -8,10 +8,14 @@ const pool = mysql.createPool({
 }).promise();
 
 export const getUser = async (name) => {
-    const [ res ] = await pool.query(`SELECT * FROM Users WHERE username = "${name}"`)
-    if (!res)
-        return ("error")
-    return (res);
+    try {
+        const [ res ] = await pool.query(`SELECT * FROM Users WHERE username = "${name}"`)
+        return res;
+    }
+    catch (err) {
+        console.log(err)
+        return err
+    }
 }
 
 export const createUser = async (name, password) => {

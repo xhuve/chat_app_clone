@@ -13,7 +13,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: "http://localhost:5173",
         methods: ["GET", "POST"]
     }
 });
@@ -40,26 +40,18 @@ app.post("/register", (req, res) => {
     })
 })
 
-app.post("/login", async (req, res) => {
-    const user = await getUser(req.body.username);
-    if (!user)
-        return res.status(400).send("User not found")
-
-    if (req.password == user.password)
-        return res.status(200).json(user);
-    else
-        return res.status(400).send("Incorrect password")
-})
 
 app.post("/login", async (req, res) => {
-    const user = await getUser(req.body.username);
+    console.log("working")
+    const [ user ] = await getUser(req.body.username);
     if (!user)
         return res.status(400).send("User not found")
-
-    if (req.password == user.password)
-        return res.status(200).json(user);
-    else
-        return res.status(400).send("Incorrect password")
+    
+    bcrypt.compare(req.body.password, user.password, (err, result) => {
+        if (err)
+            return res.status(400).send("Problem with logging in")
+        return res.status(200).send("You logged in!")
+    })
 })
 
 server.listen(3001, () => console.log("Server is listening"));
