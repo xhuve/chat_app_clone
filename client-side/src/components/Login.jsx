@@ -33,9 +33,6 @@ function Login() {
                     <input onChange={handleInput} type="password" className='border-b-2 border-gray-400 pb-2' name='password' placeholder='Password' />
                     <button type='submit' className='bg-blue-500 text-white p-2 rounded-3xl mt-[3%]'>Login</button>
                 </form>
-                <div>
-                    
-                </div>
         </div>
     );
 }

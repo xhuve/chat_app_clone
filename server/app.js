@@ -4,6 +4,8 @@ import { getUser, createUser } from "./database.js"
 import { Server } from 'socket.io'
 import cors from 'cors'
 import bcrypt from 'bcrypt';
+import { registerRoute } from "./routes/registerRoute.js"
+import { loginRoute } from "./routes/loginRoute.js"
 
 const app = Express();
 app.use(Express.json())
@@ -26,32 +28,8 @@ io.on("connection", (socket) => {
     })
 })
 
-app.post("/register", (req, res) => {
-    
-    bcrypt.hash(req.body.password, 10, async (err, hash) => {
-        if (err){
-            res.status(400).send("Problem creating account", err)
-        }
-        const user = await createUser(req.body.username, hash);
-        if (!user)
-            return res.status(400).send("Problem creating user")
+app.post("/register", registerRoute)
 
-        return res.status(200).json(user);
-    })
-})
-
-
-app.post("/login", async (req, res) => {
-    console.log("working")
-    const [ user ] = await getUser(req.body.username);
-    if (!user)
-        return res.status(400).send("User not found")
-    
-    bcrypt.compare(req.body.password, user.password, (err, result) => {
-        if (err)
-            return res.status(400).send("Problem with logging in")
-        return res.status(200).send("You logged in!")
-    })
-})
+app.post("/login", loginRoute)
 
 server.listen(3001, () => console.log("Server is listening"));
