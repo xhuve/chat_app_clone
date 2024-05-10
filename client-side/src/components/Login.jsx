@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import img from '../assets/icons/icons8-messages-100.png'
 import axios from 'axios'
+import Cookies from 'js-cookie';
 
 function Login() {
 
@@ -16,6 +17,8 @@ function Login() {
         axios.post("http://localhost:3001/login", loginInfo)
         .then((res) => {
             console.log(res)
+            localStorage.setItem("s_token", res.data[0])
+            Cookies.set("r_token", res.data[1])
         })
         .catch((err) => {
             console.log(err)
