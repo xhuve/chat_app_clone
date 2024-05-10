@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import img from '../assets/icons/icons8-messages-100.png'
 import axios from 'axios'
-import Cookies from 'js-cookie';
 
 function Login() {
 

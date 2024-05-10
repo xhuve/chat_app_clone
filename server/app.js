@@ -41,6 +41,6 @@ app.post("/login", loginRoute)
 
 app.post("/refresh", refreshTokenCheck)
 
-app.post("/site", verifyToken)
+app.post("/verify", verifyToken)
 
 server.listen(3001, () => console.log("Server is listening"));
