@@ -1,15 +1,16 @@
 import Express from "express"
 import http from 'http'
-import { getUser, createUser } from "./database.js"
-import { Server } from 'socket.io'
 import cors from 'cors'
-import bcrypt from 'bcrypt';
+import cookieParser from "cookie-parser"
+import { Server } from 'socket.io'
 import { registerRoute } from "./routes/registerRoute.js"
 import { loginRoute } from "./routes/loginRoute.js"
+import { verifyToken } from "./routes/verifyToken.js"
 
 const app = Express();
 app.use(Express.json())
 app.use(cors())
+app.use(cookieParser())
 
 const server = http.createServer(app);
 
@@ -31,5 +32,7 @@ io.on("connection", (socket) => {
 app.post("/register", registerRoute)
 
 app.post("/login", loginRoute)
+
+app.post("/site", verifyToken)
 
 server.listen(3001, () => console.log("Server is listening"));
