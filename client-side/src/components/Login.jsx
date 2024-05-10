@@ -14,11 +14,10 @@ function Login() {
 
     const handleLogin = (e) => {
         e.preventDefault();
-        axios.post("http://localhost:3001/login", loginInfo)
+        axios.post("http://localhost:3001/login", loginInfo, { withCredentials: true })
         .then((res) => {
+            localStorage.setItem("s_token", res.data)
             console.log(res)
-            localStorage.setItem("s_token", res.data[0])
-            Cookies.set("r_token", res.data[1])
         })
         .catch((err) => {
             console.log(err)

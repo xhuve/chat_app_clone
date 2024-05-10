@@ -16,7 +16,8 @@ export const loginRoute = async (req, res) => {
         const sessionToken = jwt.sign(user, process.env.SESSION_TOKEN, {expiresIn: "1m"}) 
         const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN, {expiresIn: "10m"})
 
-        res.status(200).send([sessionToken, refreshToken])
+        res.cookie("rToken", refreshToken, { httpOnly: true })
+        res.status(200).send(sessionToken)
         return result
     })
 }
