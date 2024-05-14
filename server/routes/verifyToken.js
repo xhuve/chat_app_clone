@@ -2,7 +2,7 @@ import "dotenv/config"
 import jwt from "jsonwebtoken"
 
 export const verifyToken = (req, res, next) => {
-    const { token } = req.value
+    const { token } = req.body
 
     if (token){
         jwt.verify(token, process.env.SESSION_TOKEN, (err, decoded) => {
