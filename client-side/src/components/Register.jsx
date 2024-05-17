@@ -34,7 +34,7 @@ function Register() {
                         <button type='submit' className='bg-blue-500 text-white p-2 rounded-3xl mt-[3%]'>Register</button>
                     </form>
             </div>
-            <div className='w-2/3 md:w-1/3 h-screen bg-gradient-to-l from-blue-500 to-white md:to-transparent'>
+            <div className='w-2/3 md:w-1/3 h-screen bg-gradient-to-l from-cyan-500 to-white md:to-transparent'>
                 Test
             </div>
         </div>
