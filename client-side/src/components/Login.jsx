@@ -24,11 +24,11 @@ function Login() {
     }
 
     return (
-        <div className='w-screen h-screen overflow-hidden flex justify-center items-center place-content-around bg-gray-200'>
-            <div className='w-screen bg-blue-900'>
+        <div className='w-screen h-screen overflow-hidden flex items-center justify-between bg-gray-200'>
+            <div className='w-2/3 md:w-1/3 h-screen bg-gradient-to-r from-blue-500 to-white md:to-transparent'>
                 Test
             </div>
-            <div className='flex bg-white lg:h-[70%] lg:w-[30%] md:h-[70%] md:w-[50%] h-screen w-[90vw] gap-7 justify-center items-center flex-col border-1 rounded-md'>
+            <div className='flex bg-white lg:h-[70%] lg:w-[30%] md:h-[70%] md:w-[50%] h-screen w-[90vw] md:mr-[10%] md:border-2 border-gray-300 border-solid gap-7 justify-center items-center flex-col border-1 rounded-md'>
                     <div className='flex items-center gap-3 flex-col text-center font-semibold text-4xl'>
                         <img className='size-20' src={img} alt="icon" />
                         <p>Welcome</p>
