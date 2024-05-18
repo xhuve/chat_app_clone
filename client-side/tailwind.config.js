@@ -6,10 +6,12 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
-    fontFamily: {
-      'poetsen': ["Poetsen One", "sans-serif"]
-    }
+    extend: {
+      fontFamily: {
+        'reddit-sans': ["Reddit Sans", "sans-serif"],
+        'freeman': ["Freeman", "sans-serif"]
+      },
+    },
   },
   plugins: [],
 }

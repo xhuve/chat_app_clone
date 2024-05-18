@@ -35,7 +35,7 @@ function Register() {
                     </form>
             </div>
             <div className='w-2/3 md:w-1/3 h-screen bg-gradient-to-l from-cyan-500 to-white md:to-transparent'>
-                Test
+                
             </div>
         </div>
     );
