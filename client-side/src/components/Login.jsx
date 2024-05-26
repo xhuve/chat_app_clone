@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import img from '../assets/icons/icons8-messages-100.png'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
 
     const [loginInfo, setLoginInfo] = useState({})
+    const nav = useNavigate()
     
     const handleInput = (event) => {
         setLoginInfo({...loginInfo, [event.target.name]: event.target.value})
@@ -16,6 +18,7 @@ function Login() {
         axios.post("http://localhost:3001/login", loginInfo, { withCredentials: true })
         .then((res) => {
             localStorage.setItem("s_token", res.data)
+            nav("/chat")
             console.log(res)
         })
         .catch((err) => {
@@ -36,6 +39,7 @@ function Login() {
                         <input onChange={handleInput} type="text" className='border-b-2 border-gray-400 pb-2' name='username' placeholder='Username' />
                         <input onChange={handleInput} type="password" className='border-b-2 border-gray-400 pb-2' name='password' placeholder='Password' />
                         <button type='submit' className='bg-blue-500 text-white p-2 rounded-3xl mt-[3%]'>Login</button>
+                        <div className='text-right'>No account? <a onClick={() => {nav("/register")}} className='text-blue-700 underline'>Click here</a></div>
                     </form>
             </div>
         </div>

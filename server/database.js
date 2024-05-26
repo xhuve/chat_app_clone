@@ -9,7 +9,7 @@ const pool = mysql.createPool({
 
 export const getUser = async (name) => {
     try {
-        const [ res ] = await pool.query(`SELECT * FROM Users WHERE username = "${name}"`)
+        const [ res ] = await pool.query(`SELECT * FROM User WHERE username = "${name}"`)
         return res;
     }
     catch (err) {
@@ -19,6 +19,6 @@ export const getUser = async (name) => {
 }
 
 export const createUser = async (name, password) => {
-    const [ res ] = await pool.query(`INSERT INTO Users (username, password) VALUES ("${name}", "${password}")`)
+    const [ res ] = await pool.query(`INSERT INTO User (username, password) VALUES ("${name}", "${password}")`)
     return (res);
 }

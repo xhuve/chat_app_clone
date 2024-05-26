@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import img from '../assets/icons/icons8-messages-100.png'
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function Register() {
 
     const [registerInfo, setRegisterInfo] = useState({})
+    const nav = useNavigate()
 
     const handleRegister = (e) => {
         e.preventDefault()
@@ -32,6 +34,7 @@ function Register() {
                         <input onChange={handleInput} type="text" className='border-b-2 border-gray-400 pb-2' name='username' placeholder='Username' />
                         <input onChange={handleInput} type="password" className='border-b-2 border-gray-400 pb-2' name='password' placeholder='Password' />
                         <button type='submit' className='bg-blue-500 text-white p-2 rounded-3xl mt-[3%]'>Register</button>
+                        <div className='text-left'>Already have an account? <a onClick={() => {nav("/login")}} className='text-blue-700 underline'>Click here</a></div>
                     </form>
             </div>
             <div className='w-2/3 md:w-1/3 h-screen bg-gradient-to-l from-cyan-500 to-white md:to-transparent'>

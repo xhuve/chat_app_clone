@@ -1,6 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios'
 
 const ChatScreen = () => {
+
+    const nav = useNavigate()
+
+    useEffect(() => {
+        axios.post("http://localhost:3001/verify", { token: localStorage.getItem("s_token")})
+        .then((res) => {
+          console.log(res)
+        })
+        .catch((err) => {
+            console.log(err)
+            nav("/")
+        })
+    }, [])
 
     const users = ["Person 1", "Person 2", "Person 3", "Person 4"]
 
@@ -9,7 +24,7 @@ const ChatScreen = () => {
 
     return (
             <div className="w-screen h-screen flex">
-                <div name="chats" className=' flex flex-col w-[25%] min-w-60 border-r-2'>
+                <div name="chats" className='flex flex-col w-[25%] min-w-60 border-r-2'>
                     <div className=' min-h-16 h-[15%] bg-lightBeige  flex flex-col'>
                         <div className='mt-[5%] ml-5'>
                             Username
