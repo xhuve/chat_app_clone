@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, useNavigate } from 'react-router-dom'
 import Welcome from './components/Welcome.jsx'
 import Register from './components/Register.jsx'
 import Login from './components/Login.jsx'
@@ -14,6 +14,8 @@ import ChatScreen from './components/ChatScreen.jsx'
   based on whether the user token/cookie is invalid. Going to have to think more about that.
   R-R-D docs say i should have a root route. Maybe the logic for above couuld be stored in that.
 */
+
+
 const router = createBrowserRouter([
   {
     path: "/",

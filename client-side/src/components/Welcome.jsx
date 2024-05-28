@@ -1,9 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
 
 const Welcome = () => {
 
     const nav = useNavigate();
+
+    useEffect(() => {
+        axios.post("http://localhost:3001/verify", { token: localStorage.getItem("s_token")})
+        .then((res) => {
+            console.log(res)
+            nav("/chat")
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }, [])
+
 
     const handleButtonClick = (event) => {
         nav("/" + event.target.name)

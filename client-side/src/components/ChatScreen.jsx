@@ -31,14 +31,14 @@ const ChatScreen = () => {
                         </div>
                         {
                             friendSearch ?
-                            <div className='flex w-full mt-2'>
+                            <div className='flex w-full mt-2 '>
                                 <input class="border w-[90%] rounded-l py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Username"></input>
                                 <button onClick={() => {setFriendSearch(!friendSearch)}} className='w-[10%] bg-gray-500'>X</button>
                             </div>
                             : 
-                            <div onClick={() => {setFriendSearch(!friendSearch)}} className='text-right mt-3 mr-2'>
+                            <button onClick={() => {setFriendSearch(!friendSearch)}} className='text-right mt-2 mr-2 ml-[50%] lg:ml-[70%] bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
                                 New Chat
-                            </div>
+                            </button>
                         }
                     </div>
                     {users.map((user) => {

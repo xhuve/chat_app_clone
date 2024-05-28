@@ -20,5 +20,15 @@ export const getUser = async (name) => {
 
 export const createUser = async (name, password) => {
     const [ res ] = await pool.query(`INSERT INTO User (username, password) VALUES ("${name}", "${password}")`)
-    return (res);
+    return res;
+}
+
+export const addFriendDB = async (user1, user2) => {
+    const [ res ] = await pool.query(`INSERT INTO Friends (user_id1, user_id2) VALUES ("${user1}", "${user2}")`)
+    return res
+}
+
+export const getFriendsDB = async (userid) => {
+    const [ res ] = await pool.query(`SELECT * FROM Friends WHERE user_id1 = '${userid}' OR user_id2 = '${userid}'`)
+    return res
 }

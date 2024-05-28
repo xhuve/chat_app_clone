@@ -7,6 +7,8 @@ import { registerRoute } from "./routes/registerRoute.js"
 import { loginRoute } from "./routes/loginRoute.js"
 import { verifyToken } from "./routes/verifyToken.js"
 import { refreshTokenCheck } from "./routes/refreshTokenCheck.js"
+import { addFriends } from "./routes/addFriends.js"
+import { getFriendsDB } from './database.js'
 
 const app = Express();
 app.use(Express.json())
@@ -43,6 +45,13 @@ app.post("/refresh", refreshTokenCheck)
 
 app.post("/verify", verifyToken, (req, res) => {
     res.send("Done")
+})
+
+app.post("/api/add_friends", addFriends)
+
+app.post("/api/load_friends", async (req, res) => {
+    const [result] = await getFriendsDB(req.body.userId)
+    return result
 })
 
 server.listen(3001, () => console.log("Server is listening"));
