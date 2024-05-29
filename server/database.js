@@ -29,6 +29,10 @@ export const addFriendDB = async (user1, user2) => {
 }
 
 export const getFriendsDB = async (userid) => {
-    const [ res ] = await pool.query(`SELECT * FROM Friends WHERE user_id1 = '${userid}' OR user_id2 = '${userid}'`)
+    const res = await pool.query(`SELECT User.*
+    FROM User
+    LEFT JOIN Friends ON User.user_id = Friends.user_id2
+    WHERE Friends.user_id1 = '${userid}'`)
+
     return res
 }

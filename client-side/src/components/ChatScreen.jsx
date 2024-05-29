@@ -14,10 +14,10 @@ const ChatScreen = () => {
     useEffect(() => {
         axios.post("http://localhost:3001/verify", { token: localStorage.getItem("s_token")})
         .then((verifyRes) => {
-            sessionStorage.setItem("user", verifyRes.data)
+            sessionStorage.setItem("user", JSON.stringify(verifyRes.data))
             axios.post("http://localhost:3001/api/load_friends", { userId: verifyRes.data.user_id})
             .then((friendResult) => {
-                updateFriends(friendResult.data)
+                updateFriends(friendResult.data.map(x => x.username))
             })
             .catch((err) => {
                 console.log(err)
@@ -44,14 +44,14 @@ const ChatScreen = () => {
                 <div name="chats" className='flex flex-col w-[25%] min-w-60 border-r-2'>
                     <div className=' min-h-16 h-[15%] bg-lightBeige  flex flex-col'>
                         <div className='mt-[5%] ml-5'>
-                            Username
+                            {JSON.parse(sessionStorage.getItem('user')).username}
                         </div>
                         {
                             friendBar ?
                             <div className='flex w-full mt-2 '>
-                                <input value={friendSearch} onInput={e => setFriendSearch(e.target.value)} class="border w-[90%] rounded-l py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Username"></input>
+                                <input value={friendSearch} onInput={e => setFriendSearch(e.target.value)} className="border w-[90%] rounded-l py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Username"></input>
                                 <button onClick={handleAddFriend} className='w-[20%] bg-green-500'>Search</button>
-                                <button onClick={() => {setFriendBar(!friendBar)}} className='w-[10%] bg-gray-500'>X</button>
+                                <button onClick={() => {setFriendBar(!friendBar)}} className='w-[12%] bg-gray-500'>X</button>
                             </div>
                             : 
                             <button onClick={() => {setFriendBar(!friendBar)}} className='text-right mt-2 mr-2 ml-[50%] lg:ml-[70%] bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
@@ -72,10 +72,10 @@ const ChatScreen = () => {
                     img
                 </div> :
                 <div name="chat-messages" className="bg-w-gray w-[75%] flex flex-col justify-between">
-                    <div class="border-b-2 p-4">
+                    <div className="border-b-2 p-4">
                         {chatWith}
                     </div>
-                    <div class="border-t flex">
+                    <div className="border-t flex">
                         <input id="user-input" type="text" placeholder="Type a message" className="w-full px-3 py-3 border rounded-lt-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
                         <button id="send-button" className="bg-gray-500 text-white px-4 py-2 rounded-rt-md hover:bg-black transition duration-300">Send</button>
                     </div>
