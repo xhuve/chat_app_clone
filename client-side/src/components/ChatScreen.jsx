@@ -4,12 +4,24 @@ import axios from 'axios'
 
 const ChatScreen = () => {
 
+    const [chatWith, setChatWith] = useState('')
+    const [friendBar, setFriendBar] = useState(false)
+    const [friendSearch, setFriendSearch] = useState("")
+    const [allFriends, updateFriends] = useState([])
     const nav = useNavigate()
 
+    // 
     useEffect(() => {
         axios.post("http://localhost:3001/verify", { token: localStorage.getItem("s_token")})
-        .then((res) => {
-          console.log(res)
+        .then((verifyRes) => {
+            sessionStorage.setItem("user", verifyRes.data)
+            axios.post("http://localhost:3001/api/load_friends", { userId: verifyRes.data.user_id})
+            .then((friendResult) => {
+                updateFriends(friendResult.data)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
         })
         .catch((err) => {
             console.log(err)
@@ -17,10 +29,15 @@ const ChatScreen = () => {
         })
     }, [])
 
-    const users = ["Person 1", "Person 2", "Person 3", "Person 4"]
-
-    const [chatWith, setChatWith] = useState('')
-    const [friendSearch, setFriendSearch] = useState(false)
+    const handleAddFriend = () => {
+        axios.post("http://localhost:3001/api/add_friends", { friendName: friendSearch, user_id: sessionStorage.getItem('user').user_id })
+        .then((result) => {
+            console.log(result)
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }
 
     return (
             <div className="w-screen h-screen flex">
@@ -30,18 +47,19 @@ const ChatScreen = () => {
                             Username
                         </div>
                         {
-                            friendSearch ?
+                            friendBar ?
                             <div className='flex w-full mt-2 '>
-                                <input class="border w-[90%] rounded-l py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Username"></input>
-                                <button onClick={() => {setFriendSearch(!friendSearch)}} className='w-[10%] bg-gray-500'>X</button>
+                                <input value={friendSearch} onInput={e => setFriendSearch(e.target.value)} class="border w-[90%] rounded-l py-2 px-2 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Username"></input>
+                                <button onClick={handleAddFriend} className='w-[20%] bg-green-500'>Search</button>
+                                <button onClick={() => {setFriendBar(!friendBar)}} className='w-[10%] bg-gray-500'>X</button>
                             </div>
                             : 
-                            <button onClick={() => {setFriendSearch(!friendSearch)}} className='text-right mt-2 mr-2 ml-[50%] lg:ml-[70%] bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
+                            <button onClick={() => {setFriendBar(!friendBar)}} className='text-right mt-2 mr-2 ml-[50%] lg:ml-[70%] bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded'>
                                 New Chat
                             </button>
                         }
                     </div>
-                    {users.map((user) => {
+                    {allFriends.map((user) => {
                         return (
                         <div onClick={() => {setChatWith(user)}} className='min-h-10 pl-2 pt-2 h-[10%] border-b-2 border-b-lightBeige'> 
                             {user}

@@ -44,14 +44,17 @@ app.post("/login", loginRoute)
 app.post("/refresh", refreshTokenCheck)
 
 app.post("/verify", verifyToken, (req, res) => {
-    res.send("Done")
+    res.send(req.user)
 })
 
 app.post("/api/add_friends", addFriends)
 
 app.post("/api/load_friends", async (req, res) => {
     const [result] = await getFriendsDB(req.body.userId)
-    return result
+    if (result == undefined)
+        res.status(200).send([])
+    else
+        res.status(200).send(result)
 })
 
 server.listen(3001, () => console.log("Server is listening"));
