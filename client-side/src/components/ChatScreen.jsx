@@ -30,7 +30,7 @@ const ChatScreen = () => {
     }, [])
 
     const handleAddFriend = () => {
-        axios.post("http://localhost:3001/api/add_friends", { friendName: friendSearch, user_id: sessionStorage.getItem('user').user_id })
+        axios.post("http://localhost:3001/api/add_friends", { friendName: friendSearch, user_id: JSON.parse(sessionStorage.getItem('user')).user_id })
         .then((result) => {
             console.log(result)
         })
