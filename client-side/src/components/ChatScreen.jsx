@@ -33,6 +33,8 @@ const ChatScreen = () => {
         axios.post("http://localhost:3001/api/add_friends", { friendName: friendSearch, user_id: JSON.parse(sessionStorage.getItem('user')).user_id })
         .then((result) => {
             console.log(result)
+            updateFriends([...allFriends, result.data[1].username])
+            setFriendSearch("")
         })
         .catch((err) => {
             console.log(err)
@@ -43,9 +45,11 @@ const ChatScreen = () => {
             <div className="w-screen h-screen flex">
                 <div name="chats" className='flex flex-col w-[25%] min-w-60 border-r-2'>
                     <div className=' min-h-16 h-[15%] bg-lightBeige  flex flex-col'>
-                        <div className='mt-[5%] ml-5'>
-                            {JSON.parse(sessionStorage.getItem('user')).username}
-                        </div>
+                            {JSON.parse(sessionStorage.getItem('user')) ?
+                                <div className='mt-[5%] ml-5'>
+                                    {JSON.parse(sessionStorage.getItem('user')).username}
+                                </div>
+                            : null}
                         {
                             friendBar ?
                             <div className='flex w-full mt-2 '>
@@ -64,7 +68,7 @@ const ChatScreen = () => {
                         <div onClick={() => {setChatWith(user)}} className='min-h-10 pl-2 pt-2 h-[10%] border-b-2 border-b-lightBeige'> 
                             {user}
                         </div>)
-                    } 
+                    }
                     )}
                 </div>
                 {chatWith == '' ?

@@ -51,7 +51,6 @@ app.post("/api/add_friends", addFriends)
 
 app.post("/api/load_friends", async (req, res) => {
     const [ result ] = await getFriendsDB(req.body.userId)
-    console.log(result)
     if (result == undefined)
         res.status(200).send([])
     else
