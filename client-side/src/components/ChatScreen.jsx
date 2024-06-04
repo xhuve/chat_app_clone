@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
+import { socket } from '../socket.js';
 
 const ChatScreen = () => {
 
@@ -8,9 +9,9 @@ const ChatScreen = () => {
     const [friendBar, setFriendBar] = useState(false)
     const [friendSearch, setFriendSearch] = useState("")
     const [allFriends, updateFriends] = useState([])
+    const [message, setMessage] = useState("")
     const nav = useNavigate()
 
-    // 
     useEffect(() => {
         axios.post("http://localhost:3001/verify", { token: localStorage.getItem("s_token")})
         .then((verifyRes) => {
@@ -27,6 +28,8 @@ const ChatScreen = () => {
             console.log(err)
             nav("/")
         })
+
+        socket.connect("http://localhost:3001")
     }, [])
 
     const handleAddFriend = () => {
@@ -39,6 +42,10 @@ const ChatScreen = () => {
         .catch((err) => {
             console.log(err)
         })
+    }
+
+    const handleSendMessage = () => {
+        socket.emit("send_message", message)
     }
 
     return (
@@ -79,9 +86,19 @@ const ChatScreen = () => {
                     <div className="border-b-2 p-4">
                         {chatWith}
                     </div>
+                    <div class="flex-1 overflow-y-auto p-4">
+                        <div class="flex flex-col space-y-2">
+                            <div class="self-end bg-blue-200 px-3 text-black p-2 rounded-lg max-w-xs">
+                                Hey, how's your day going?
+                            </div>
+                            <div class="bg-gray-300 px-3 text-black p-2 rounded-lg max-w-xs">
+                                Not too bad, just a bit busy. How about you?
+                            </div>
+                        </div>
+                    </div>
                     <div className="border-t flex">
-                        <input id="user-input" type="text" placeholder="Type a message" className="w-full px-3 py-3 border rounded-lt-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-                        <button id="send-button" className="bg-gray-500 text-white px-4 py-2 rounded-rt-md hover:bg-black transition duration-300">Send</button>
+                        <input onChange={(e) => {setMessage(e.target.value)}} id="user-input" type="text" placeholder="Type a message" className="w-full px-3 py-3 border rounded-lt-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        <button onClick={handleSendMessage} id="send-button" className="bg-gray-500 text-white px-4 py-2 rounded-rt-md hover:bg-black transition duration-300">Send</button>
                     </div>
                 </div>
                 }

@@ -21,21 +21,22 @@ app.use(cookieParser())
 
 const server = http.createServer(app);
 
-// const io = new Server(server, {
-//     cors: {
-//         origin: "http://localhost:5173",
-//         methods: ["GET", "POST"],
-//         credentials: true
-//     }
-// });
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+});
 
-// io.on("connection", (socket) => {
-//     console.log("User connected: " + socket.id)
+io.on("connection", (socket) => {
+    console.log("Connected: ")
     
-//     socket.on("send_message", (data) => {
-//         socket.broadcast.emit("recieve_message", data);
-//     })
-// })
+    socket.on("send_message", (data) => {
+        console.log(data)
+        socket.broadcast.emit("recieve_message", data);
+    })
+})
 
 app.post("/register", registerRoute)
 
@@ -57,4 +58,4 @@ app.post("/api/load_friends", async (req, res) => {
         res.status(200).send(result)
 })
 
-server.listen(3001, () => console.log("Server is listening"));
+server.listen(3001, () => console.log("Server is listening", 3001));
