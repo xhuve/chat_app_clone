@@ -32,7 +32,7 @@ const ChatScreen = () => {
                 setOnline(res)
             })
             socket.on("receiveMessage", (data) => {
-                setAllMessages([...allMessages, data])
+                setAllMessages((prevMessages) => [...prevMessages, data])
                 
             })
         })
@@ -88,11 +88,10 @@ const ChatScreen = () => {
                 date: nowDate
             }
 
-            console.log("🚀 ~ handleSendMessage ~ message:", message)
-
             socket.emit("sendMessage", messageToSend);
-            setAllMessages([...allMessages, messageToSend])
+            setAllMessages((prevMessages) => [...prevMessages, messageToSend])
             console.log(allMessages)
+            setMessage("")
         }
     };
 
@@ -137,14 +136,10 @@ const ChatScreen = () => {
                         <div class="flex flex-col space-y-2">
                             {
                                 allMessages.map(x => {
-                                    console.log(x)
-                                    return x.senderId != chatWith ?
-                                    <div class="self-end bg-blue-200 px-3 text-black p-2 rounded-lg max-w-xs">
+                                    return (
+                                    <div class={`px-3 text-black p-2 rounded-lg max-w-xs ${x.senderId != chatWith ? 'self-end bg-blue-200' : 'bg-gray-300'}`}>
                                         {x.message}
-                                    </div> : 
-                                    <div class="bg-gray-300 px-3 text-black p-2 rounded-lg max-w-xs">
-                                        {x.message}
-                                    </div>
+                                    </div>)
                                 })
                             }
                         </div>
