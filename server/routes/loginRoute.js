@@ -13,8 +13,8 @@ export const loginRoute = async (req, res) => {
         if (err)
             return res.status(400).send("Problem with logging in")
 
-        const sessionToken = jwt.sign(user, process.env.SESSION_TOKEN, {expiresIn: "15m"}) 
-        const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN, {expiresIn: "5m"})
+        const sessionToken = jwt.sign(user, process.env.SESSION_TOKEN, {expiresIn: "1h"}) 
+        const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN, {expiresIn: "10h"})
 
         res.cookie("rToken", refreshToken, { httpOnly: true })
         res.status(200).send(sessionToken)

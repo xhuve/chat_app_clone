@@ -10,7 +10,7 @@ const ChatScreen = () => {
     const [allFriends, updateFriends] = useState([])
     const [message, setMessage] = useState("")
     const [isOnline, setOnline] = useState([])
-    const [recievedMessage, setRecieved] = useState([])
+    const [allMessages, setAllMessages] = useState([])
     const [socket, setSocket] = useState(null)
     const nav = useNavigate()
 
@@ -32,10 +32,15 @@ const ChatScreen = () => {
                 setOnline(res)
             })
             socket.on("receiveMessage", (data) => {
-                console.log("🚀 ~ socket.on ~ data: current", data)   
+                setAllMessages([...allMessages, data])
+                
             })
         })
     }, [socket])
+
+    useEffect(() => {
+        setAllMessages(allMessages.sort((a, b) => a.date - b.date))
+    }, [allMessages])
 
     useEffect(() => {
         axios.post("http://localhost:3001/verify", { token: localStorage.getItem("s_token")})
@@ -75,12 +80,19 @@ const ChatScreen = () => {
         const recepiant = isOnline.find((user) => user.userId === chatWith);
         if (recepiant) {
             console.log(recepiant)
-            socket.emit("sendMessage", {
+            const nowDate = new Date()
+            const messageToSend = {
                 senderId: user.username,
                 receiverId: recepiant.userId,
-                message,
-            });
-            setMessage("")
+                message: message,
+                date: nowDate
+            }
+
+            console.log("🚀 ~ handleSendMessage ~ message:", message)
+
+            socket.emit("sendMessage", messageToSend);
+            setAllMessages([...allMessages, messageToSend])
+            console.log(allMessages)
         }
     };
 
@@ -123,12 +135,18 @@ const ChatScreen = () => {
                     </div>
                     <div class="flex-1 overflow-y-auto p-4">
                         <div class="flex flex-col space-y-2">
-                            <div class="self-end bg-blue-200 px-3 text-black p-2 rounded-lg max-w-xs">
-                                Hey, how's your day going?
-                            </div>
-                            <div class="bg-gray-300 px-3 text-black p-2 rounded-lg max-w-xs">
-                                Not too bad, just a bit busy. How about you?
-                            </div>
+                            {
+                                allMessages.map(x => {
+                                    console.log(x)
+                                    return x.senderId != chatWith ?
+                                    <div class="self-end bg-blue-200 px-3 text-black p-2 rounded-lg max-w-xs">
+                                        {x.message}
+                                    </div> : 
+                                    <div class="bg-gray-300 px-3 text-black p-2 rounded-lg max-w-xs">
+                                        {x.message}
+                                    </div>
+                                })
+                            }
                         </div>
                     </div>
                     <div className="border-t flex">
