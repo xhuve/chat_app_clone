@@ -19,6 +19,8 @@ app.use(cors( {
 }))
 app.use(cookieParser())
 
+let onlineUsers = []
+
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -30,14 +32,28 @@ const io = new Server(server, {
 });
 
 io.on("connection", (socket) => {
-    console.log("Connected: ")
-    
-    socket.on("send_message", (data) => {
-        console.log(data)
-        socket.broadcast.emit("recieve_message", data);
-    })
-})
+    socket.on("addNewUser", (userId) => {
+        if (!onlineUsers.some(user => user.userId === userId)) {
+            onlineUsers.push({ userId, socketId: socket.id });
+        }
+        io.emit("getOnlineUsers", onlineUsers);
+    });
 
+    socket.on("sendMessage", ({ senderId, receiverId, message }) => {
+        const receiver = onlineUsers.find(user => user.userId === receiverId);
+        if (receiver) {
+            io.to(receiver.socketId).emit("receiveMessage", {
+                senderId,
+                message,
+            });
+        }
+    });
+
+    socket.on("disconnect", () => {
+        onlineUsers = onlineUsers.filter(user => user.socketId !== socket.id);
+        io.emit("getOnlineUsers", onlineUsers);
+    });
+});
 app.post("/register", registerRoute)
 
 app.post("/login", loginRoute)

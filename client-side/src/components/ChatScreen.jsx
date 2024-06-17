@@ -1,16 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios'
-import { socket } from '../socket.js';
+import { socketio } from '../socket.js';
 
 const ChatScreen = () => {
-
     const [chatWith, setChatWith] = useState('')
     const [friendBar, setFriendBar] = useState(false)
     const [friendSearch, setFriendSearch] = useState("")
     const [allFriends, updateFriends] = useState([])
     const [message, setMessage] = useState("")
+    const [isOnline, setOnline] = useState([])
+    const [recievedMessage, setRecieved] = useState([])
+    const [socket, setSocket] = useState(null)
     const nav = useNavigate()
+
+    useEffect(() => {
+        const newSocket = socketio.connect("http://localhost:3001")
+        setSocket(newSocket)
+
+        return () => {
+            newSocket.disconnect();
+        }
+    }, [])
+
+    useEffect(() => {
+        if (socket === null) return;
+        socket.on('connect', () => {
+            socket.emit("addNewUser", JSON.parse(sessionStorage.getItem('user')).username)
+    
+            socket.on("getOnlineUsers", (res) => {
+                setOnline(res)
+            })
+            socket.on("receiveMessage", (data) => {
+                console.log("🚀 ~ socket.on ~ data: current", data)   
+            })
+        })
+    }, [socket])
 
     useEffect(() => {
         axios.post("http://localhost:3001/verify", { token: localStorage.getItem("s_token")})
@@ -19,6 +44,7 @@ const ChatScreen = () => {
             axios.post("http://localhost:3001/api/load_friends", { userId: verifyRes.data.user_id})
             .then((friendResult) => {
                 updateFriends(friendResult.data.map(x => x.username))
+                console.log(isOnline)
             })
             .catch((err) => {
                 console.log(err)
@@ -29,7 +55,7 @@ const ChatScreen = () => {
             nav("/")
         })
 
-        socket.connect("http://localhost:3001")
+
     }, [])
 
     const handleAddFriend = () => {
@@ -45,13 +71,23 @@ const ChatScreen = () => {
     }
 
     const handleSendMessage = () => {
-        socket.emit("send_message", message)
-    }
+        const user = JSON.parse(sessionStorage.getItem('user'));
+        const recepiant = isOnline.find((user) => user.userId === chatWith);
+        if (recepiant) {
+            console.log(recepiant)
+            socket.emit("sendMessage", {
+                senderId: user.username,
+                receiverId: recepiant.userId,
+                message,
+            });
+            setMessage("")
+        }
+    };
 
     return (
             <div className="w-screen h-screen flex">
                 <div name="chats" className='flex flex-col w-[25%] min-w-60 border-r-2'>
-                    <div className=' min-h-16 h-[15%] bg-lightBeige  flex flex-col'>
+                    <div className=' min-h-24 h-[15%] bg-lightBeige  flex flex-col'>
                             {JSON.parse(sessionStorage.getItem('user')) ?
                                 <div className='mt-[5%] ml-5'>
                                     {JSON.parse(sessionStorage.getItem('user')).username}
@@ -75,8 +111,7 @@ const ChatScreen = () => {
                         <div onClick={() => {setChatWith(user)}} className='min-h-10 pl-2 pt-2 h-[10%] border-b-2 border-b-lightBeige'> 
                             {user}
                         </div>)
-                    }
-                    )}
+                    })}
                 </div>
                 {chatWith == '' ?
                 <div>
