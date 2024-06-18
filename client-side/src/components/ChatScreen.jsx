@@ -4,6 +4,7 @@ import axios from 'axios'
 import { socketio } from '../socket.js';
 
 const ChatScreen = () => {
+
     const [chatWith, setChatWith] = useState('')
     const [friendBar, setFriendBar] = useState(false)
     const [friendSearch, setFriendSearch] = useState("")
@@ -33,7 +34,6 @@ const ChatScreen = () => {
             })
             socket.on("receiveMessage", (data) => {
                 setAllMessages((prevMessages) => [...prevMessages, data])
-                
             })
         })
     }, [socket])

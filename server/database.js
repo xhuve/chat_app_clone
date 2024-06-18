@@ -36,3 +36,38 @@ export const getFriendsDB = async (userid) => {
 
     return res
 }
+
+export const createMessageDB = async (user1, user2, message) => {
+    const res = await pool.query(`INSERT INTO Messages (userId1, userId2, messages) VALUES (${user1}, ${user2}, '${JSON.stringify(message)}')`);
+    return res;
+}
+
+export const getMessagesDB = async (user1, user2) => {
+    const res = await pool.query(`
+        SELECT messages 
+        FROM Messages 
+        WHERE (userId1 = ${user1} AND userId2 = ${user2}) OR (userId1 = ${user2} AND userId2 = ${user1})
+    `);
+
+    return res;
+}
+
+export const updateMessageDB = async (user1, user2, message) => {
+
+    const res = await pool.query(`
+        UPDATE Messages
+        SET messages = '${JSON.stringify(message)}'
+        WHERE (userId1 = ${user1} AND userId2 = ${user2}) OR (userId1 = ${user2} AND userId2 = ${user1})
+    `);
+
+    return res;
+}
+
+export const deleteMessageDB = async (user1, user2) => {
+    const [res] = await pool.query(`
+        DELETE FROM Messages
+        WHERE (userId1 = ${user1} AND userId2 = ${user2}) OR (userId1 = ${user2} AND userId2 = ${user1})
+    `);
+
+    return res;
+}

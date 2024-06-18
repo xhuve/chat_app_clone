@@ -8,7 +8,7 @@ import { loginRoute } from "./routes/loginRoute.js"
 import { verifyToken } from "./routes/verifyToken.js"
 import { refreshTokenCheck } from "./routes/refreshTokenCheck.js"
 import { addFriends } from "./routes/addFriends.js"
-import { getFriendsDB } from './database.js'
+import { createMessageDB, getFriendsDB, getMessagesDB, updateMessageDB } from './database.js'
 
 const app = Express();
 app.use(Express.json())
@@ -74,5 +74,30 @@ app.post("/api/load_friends", async (req, res) => {
     else
         res.status(200).send(result)
 })
+
+app.post("/api/get_messages", async (req, res) => {
+    const result = await getMessagesDB(req.body.userId1, req.body.userId2)
+    if (!result) {
+        res.status(200).send("Empty")
+        return;
+    }
+    res.status(200).send(result[0][0].messages)
+})
+
+app.post("/api/send_message", async (req, res) => {
+    try {
+        const messages = await getMessagesDB(req.body.userId1, req.body.userId2)
+        let result;
+        if (messages.length === 0) {
+            [result] = await createMessageDB(req.body.userId1, req.body.userId2, req.body.message)
+        } else {
+            [result] = await updateMessageDB(req.body.userId1, req.body.userId2, req.body.message)
+        }
+        res.status(200).send(result)
+    } catch (error) {
+        res.status(400).send({ error: error.message })
+    }
+})
+
 
 server.listen(3001, () => console.log("Server is listening", 3001));
