@@ -88,10 +88,13 @@ app.post("/api/send_message", async (req, res) => {
     try {
         const messages = await getMessagesDB(req.body.userId1, req.body.userId2)
         let result;
-        if (messages.length === 0) {
-            [result] = await createMessageDB(req.body.userId1, req.body.userId2, req.body.message)
+        if (messages[0].length === 0) {
+            console.log("Creating message")
+            result = await createMessageDB(req.body.userId1, req.body.userId2, req.body.message)
         } else {
-            [result] = await updateMessageDB(req.body.userId1, req.body.userId2, req.body.message)
+            console.log("Updating message")
+            console.log("🚀 ~ app.post ~ req.body.userId1, req.body.userId2, req.body.message:", req.body.userId1, req.body.userId2, req.body.message)
+            result = await updateMessageDB(req.body.userId1, req.body.userId2, req.body.message)
         }
         res.status(200).send(result)
     } catch (error) {

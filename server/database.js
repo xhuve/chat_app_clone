@@ -53,7 +53,6 @@ export const getMessagesDB = async (user1, user2) => {
 }
 
 export const updateMessageDB = async (user1, user2, message) => {
-
     const res = await pool.query(`
         UPDATE Messages
         SET messages = '${JSON.stringify(message)}'
