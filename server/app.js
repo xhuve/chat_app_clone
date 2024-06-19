@@ -55,6 +55,7 @@ io.on("connection", (socket) => {
         io.emit("getOnlineUsers", onlineUsers);
     });
 });
+
 app.post("/register", registerRoute)
 
 app.post("/login", loginRoute)
@@ -89,18 +90,16 @@ app.post("/api/send_message", async (req, res) => {
         const messages = await getMessagesDB(req.body.userId1, req.body.userId2)
         let result;
         if (messages[0].length === 0) {
-            console.log("Creating message")
+             console.log("Creating message")
             result = await createMessageDB(req.body.userId1, req.body.userId2, req.body.message)
         } else {
             console.log("Updating message")
-            console.log("🚀 ~ app.post ~ req.body.userId1, req.body.userId2, req.body.message:", req.body.userId1, req.body.userId2, req.body.message)
             result = await updateMessageDB(req.body.userId1, req.body.userId2, req.body.message)
         }
-        res.status(200).send(result)
+        res.status(200).send(result[0])
     } catch (error) {
         res.status(400).send({ error: error.message })
     }
 })
-
 
 server.listen(3001, () => console.log("Server is listening", 3001));

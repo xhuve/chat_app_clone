@@ -5,10 +5,10 @@ import { socketio } from '../socket.js';
 
 const ChatScreen = () => {
 
-    const [chatWith, setChatWith] = useState('')
+    const [chatWith, setChatWith] = useState([])
     const [friendBar, setFriendBar] = useState(false)
     const [friendSearch, setFriendSearch] = useState("")
-    const [allFriends, updateFriends] = useState([])
+    const [allFriends, updateFriends] = useState({})
     const [message, setMessage] = useState("")
     const [isOnline, setOnline] = useState([])
     const [allMessages, setAllMessages] = useState([])
@@ -38,18 +38,20 @@ const ChatScreen = () => {
         })
     }, [socket])
 
+    
     useEffect(() => {
         setAllMessages(allMessages.sort((a, b) => a.date - b.date))
     }, [allMessages])
-
+    
     useEffect(() => {
         axios.post("http://localhost:3001/verify", { token: localStorage.getItem("s_token")})
         .then((verifyRes) => {
             sessionStorage.setItem("user", JSON.stringify(verifyRes.data))
             axios.post("http://localhost:3001/api/load_friends", { userId: verifyRes.data.user_id})
             .then((friendResult) => {
-                updateFriends(friendResult.data.map(x => x.username))
-                console.log(isOnline)
+                const usernames = friendResult.data.map(x => x.username)
+                const user_ids = friendResult.data.map(x => x.user_id)
+                updateFriends({usernames: usernames, userIds: user_ids})
             })
             .catch((err) => {
                 console.log(err)
@@ -59,15 +61,34 @@ const ChatScreen = () => {
             console.log(err)
             nav("/")
         })
-
+        
+        console.log("Friends", allFriends)
 
     }, [])
+
+    useEffect(() => {
+        user = JSON.parse(sessionStorage.getItem('user'))
+        console.log("🚀 ~ useEffect ~ user:", user)
+        if (user && chatWith.length != 0){
+            axios.post('http://localhost:3001/api/get_messages', {userId1: user.user_id, userId2: chatWith[1]})
+            .then((messages) => {
+                console.log(messages)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        }
+    }, [chatWith])
 
     const handleAddFriend = () => {
         axios.post("http://localhost:3001/api/add_friends", { friendName: friendSearch, user_id: JSON.parse(sessionStorage.getItem('user')).user_id })
         .then((result) => {
             console.log(result)
-            updateFriends([...allFriends, result.data[1].username])
+            const updatedFriends = {
+                usernames: [...allFriends.usernames, result.data[1].username],
+                userIds: [...allFriends.userIds, result.data[1].user_id]
+            };
+            updateFriends(updatedFriends)
             setFriendSearch("")
         })
         .catch((err) => {
@@ -77,7 +98,7 @@ const ChatScreen = () => {
 
     const handleSendMessage = () => {
         const user = JSON.parse(sessionStorage.getItem('user'));
-        const recepiant = isOnline.find((user) => user.userId === chatWith);
+        const recepiant = isOnline.find((user) => user.userId === chatWith[0]);
         if (recepiant) {
             console.log(recepiant)
             const nowDate = new Date()
@@ -117,9 +138,9 @@ const ChatScreen = () => {
                             </button>
                         }
                     </div>
-                    {allFriends.map((user) => {
+                    {allFriends.usernames == undefined ? null : allFriends.usernames.map((user, idx) => {
                         return (
-                        <div onClick={() => {setChatWith(user)}} className='min-h-10 pl-2 pt-2 h-[10%] border-b-2 border-b-lightBeige'> 
+                        <div onClick={() => {setChatWith([user, idx])}} className='min-h-10 pl-2 pt-2 h-[10%] border-b-2 border-b-lightBeige'> 
                             {user}
                         </div>)
                     })}
@@ -130,7 +151,7 @@ const ChatScreen = () => {
                 </div> :
                 <div name="chat-messages" className="bg-w-gray w-[75%] flex flex-col justify-between">
                     <div className="border-b-2 p-4">
-                        {chatWith}
+                        {chatWith[0]}
                     </div>
                     <div class="flex-1 overflow-y-auto p-4">
                         <div class="flex flex-col space-y-2">
