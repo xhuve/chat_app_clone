@@ -78,10 +78,12 @@ app.post("/api/load_friends", async (req, res) => {
 
 app.post("/api/get_messages", async (req, res) => {
     const result = await getMessagesDB(req.body.userId1, req.body.userId2)
-    if (!result) {
+    if (!result[0][0]) {
         res.status(200).send("Empty")
         return;
     }
+
+    console.log(result)
     res.status(200).send(result[0][0].messages)
 })
 

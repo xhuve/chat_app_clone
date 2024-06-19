@@ -8,7 +8,7 @@ const ChatScreen = () => {
     const [chatWith, setChatWith] = useState([])
     const [friendBar, setFriendBar] = useState(false)
     const [friendSearch, setFriendSearch] = useState("")
-    const [allFriends, updateFriends] = useState({})
+    const [allFriends, updateFriends] = useState({ usernames: [], userIds: [] })
     const [message, setMessage] = useState("")
     const [isOnline, setOnline] = useState([])
     const [allMessages, setAllMessages] = useState([])
@@ -67,9 +67,8 @@ const ChatScreen = () => {
     }, [])
 
     useEffect(() => {
-        user = JSON.parse(sessionStorage.getItem('user'))
-        console.log("🚀 ~ useEffect ~ user:", user)
-        if (user && chatWith.length != 0){
+        const user = JSON.parse(sessionStorage.getItem('user'))
+        if (user && chatWith.length !== 0){
             axios.post('http://localhost:3001/api/get_messages', {userId1: user.user_id, userId2: chatWith[1]})
             .then((messages) => {
                 console.log(messages)
