@@ -11,7 +11,7 @@ const ChatScreen = () => {
     const [allFriends, updateFriends] = useState({ usernames: [], userIds: [] })
     const [message, setMessage] = useState("")
     const [isOnline, setOnline] = useState([])
-    const [allMessages, setAllMessages] = useState([])
+    const [allMessages, setAllMessages] = useState(null)
     const [socket, setSocket] = useState(null)
     const nav = useNavigate()
 
@@ -39,9 +39,9 @@ const ChatScreen = () => {
     }, [socket])
 
     
-    useEffect(() => {
-        setAllMessages(allMessages.sort((a, b) => a.date - b.date))
-    }, [allMessages])
+    // useEffect(() => {
+    //     setAllMessages(allMessages.sort((a, b) => a.date - b.date))
+    // }, [allMessages])
     
     useEffect(() => {
         axios.post("http://localhost:3001/verify", { token: localStorage.getItem("s_token")})
@@ -71,7 +71,11 @@ const ChatScreen = () => {
         if (user && chatWith.length !== 0){
             axios.post('http://localhost:3001/api/get_messages', {userId1: user.user_id, userId2: chatWith[1]})
             .then((messages) => {
-                console.log(messages)
+                console.log("🚀 ~ .then ~ messages:", messages)
+                if (messages.data != "Empty")
+                    setAllMessages(messages.data.map(x => x.message))
+                else
+                    setAllMessages(null)
             })
             .catch((err) => {
                 console.log(err)
@@ -100,12 +104,10 @@ const ChatScreen = () => {
         const recepiant = isOnline.find((user) => user.userId === chatWith[0]);
         if (recepiant) {
             console.log(recepiant)
-            const nowDate = new Date()
             const messageToSend = {
                 senderId: user.username,
                 receiverId: recepiant.userId,
                 message: message,
-                date: nowDate
             }
 
             socket.emit("sendMessage", messageToSend);
@@ -139,7 +141,7 @@ const ChatScreen = () => {
                     </div>
                     {allFriends.usernames == undefined ? null : allFriends.usernames.map((user, idx) => {
                         return (
-                        <div onClick={() => {setChatWith([user, idx])}} className='min-h-10 pl-2 pt-2 h-[10%] border-b-2 border-b-lightBeige'> 
+                        <div onClick={() => {setChatWith([user, allFriends.userIds[idx]])}} className='min-h-10 pl-2 pt-2 h-[10%] border-b-2 border-b-lightBeige'> 
                             {user}
                         </div>)
                     })}
@@ -155,10 +157,11 @@ const ChatScreen = () => {
                     <div class="flex-1 overflow-y-auto p-4">
                         <div class="flex flex-col space-y-2">
                             {
+                                allMessages == null ? null :  
                                 allMessages.map(x => {
                                     return (
                                     <div class={`px-3 text-black p-2 rounded-lg max-w-xs ${x.senderId != chatWith ? 'self-end bg-blue-200' : 'bg-gray-300'}`}>
-                                        {x.message}
+                                        {x}
                                     </div>)
                                 })
                             }

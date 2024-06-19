@@ -39,9 +39,10 @@ io.on("connection", (socket) => {
         io.emit("getOnlineUsers", onlineUsers);
     });
 
-    socket.on("sendMessage", ({ senderId, receiverId, message, date }) => {
+    socket.on("sendMessage", ({ senderId, receiverId, message }) => {
         const receiver = onlineUsers.find(user => user.userId === receiverId);
         if (receiver) {
+            const date = new Date()
             io.to(receiver.socketId).emit("receiveMessage", {
                 senderId,
                 message,
@@ -77,6 +78,7 @@ app.post("/api/load_friends", async (req, res) => {
 })
 
 app.post("/api/get_messages", async (req, res) => {
+    console.log("🚀 ~ app.post ~ req.body.userId1, req.body.userId2:", req.body.userId1, req.body.userId2)
     const result = await getMessagesDB(req.body.userId1, req.body.userId2)
     if (!result[0][0]) {
         res.status(200).send("Empty")
