@@ -39,10 +39,9 @@ io.on("connection", (socket) => {
         io.emit("getOnlineUsers", onlineUsers);
     });
 
-    socket.on("sendMessage", ({ senderId, receiverId, message }) => {
+    socket.on("sendMessage", ({ senderId, receiverId, message, date }) => {
         const receiver = onlineUsers.find(user => user.userId === receiverId);
         if (receiver) {
-            const date = new Date()
             io.to(receiver.socketId).emit("receiveMessage", {
                 senderId,
                 message,

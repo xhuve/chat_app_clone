@@ -11,7 +11,7 @@ const ChatScreen = () => {
     const [allFriends, updateFriends] = useState({ usernames: [], userIds: [] })
     const [message, setMessage] = useState("")
     const [isOnline, setOnline] = useState([])
-    const [allMessages, setAllMessages] = useState(null)
+    const [allMessages, setAllMessages] = useState([])
     const [socket, setSocket] = useState(null)
     const nav = useNavigate()
 
@@ -38,10 +38,9 @@ const ChatScreen = () => {
         })
     }, [socket])
 
-    
-    // useEffect(() => {
-    //     setAllMessages(allMessages.sort((a, b) => a.date - b.date))
-    // }, [allMessages])
+    useEffect(() => {
+        setAllMessages((prevMessages) => [...prevMessages].sort((a, b) => a.date - b.date))
+    }, [allMessages])
     
     useEffect(() => {
         axios.post("http://localhost:3001/verify", { token: localStorage.getItem("s_token")})
@@ -61,21 +60,19 @@ const ChatScreen = () => {
             console.log(err)
             nav("/")
         })
-        
-        console.log("Friends", allFriends)
-
     }, [])
 
     useEffect(() => {
         const user = JSON.parse(sessionStorage.getItem('user'))
         if (user && chatWith.length !== 0){
-            axios.post('http://localhost:3001/api/get_messages', {userId1: user.user_id, userId2: chatWith[1]})
+            const dataToSend = {userId1: user.user_id, userId2: chatWith[1]}
+            console.log("🚀 ~ useEffect ~ dataToSend:", dataToSend)
+            axios.post('http://localhost:3001/api/get_messages', dataToSend)
             .then((messages) => {
-                console.log("🚀 ~ .then ~ messages:", messages)
                 if (messages.data != "Empty")
-                    setAllMessages(messages.data.map(x => x.message))
+                    setAllMessages([messages.data])
                 else
-                    setAllMessages(null)
+                    setAllMessages([])
             })
             .catch((err) => {
                 console.log(err)
@@ -102,18 +99,20 @@ const ChatScreen = () => {
     const handleSendMessage = () => {
         const user = JSON.parse(sessionStorage.getItem('user'));
         const recepiant = isOnline.find((user) => user.userId === chatWith[0]);
+        console.log("🚀 ~ handleSendMessage ~ recepiant:", recepiant)
+        
         if (recepiant) {
-            console.log(recepiant)
+            const date = new Date()
             const messageToSend = {
-                senderId: user.username,
                 receiverId: recepiant.userId,
+                senderId: user.username,
                 message: message,
+                date: date
             }
 
             socket.emit("sendMessage", messageToSend);
             setAllMessages((prevMessages) => [...prevMessages, messageToSend])
-            console.log(allMessages)
-            setMessage("")
+            console.log("🚀 ~ handleSendMessage ~ allMessages:", allMessages)
         }
     };
 
@@ -157,11 +156,11 @@ const ChatScreen = () => {
                     <div class="flex-1 overflow-y-auto p-4">
                         <div class="flex flex-col space-y-2">
                             {
-                                allMessages == null ? null :  
+                                allMessages.length == 0 ? null :  
                                 allMessages.map(x => {
                                     return (
-                                    <div class={`px-3 text-black p-2 rounded-lg max-w-xs ${x.senderId != chatWith ? 'self-end bg-blue-200' : 'bg-gray-300'}`}>
-                                        {x}
+                                    <div class={`px-3 text-black p-2 rounded-lg max-w-xs ${x.senderId != chatWith[0] ? 'self-end bg-blue-200' : 'bg-gray-300'}`}>
+                                        {x.message}
                                     </div>)
                                 })
                             }
