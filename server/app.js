@@ -79,13 +79,16 @@ app.post("/api/load_friends", async (req, res) => {
 app.post("/api/get_messages", async (req, res) => {
     console.log("🚀 ~ app.post ~ req.body.userId1, req.body.userId2:", req.body.userId1, req.body.userId2)
     const result = await getMessagesDB(req.body.userId1, req.body.userId2)
-    if (!result[0][0]) {
+    if (!result[0]) {
         res.status(200).send("Empty")
         return;
     }
 
-    console.log(result)
-    res.status(200).send(result[0][0].messages)
+    let allMessages = []
+    
+    result[0].map(x => allMessages.push(x.messages))
+
+    res.status(200).send(allMessages)
 })
 
 app.post("/api/send_message", async (req, res) => {

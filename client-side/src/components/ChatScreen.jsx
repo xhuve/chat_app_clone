@@ -33,14 +33,14 @@ const ChatScreen = () => {
                 setOnline(res)
             })
             socket.on("receiveMessage", (data) => {
-                setAllMessages((prevMessages) => [...prevMessages, data])
+                setAllMessages((prevMessages) => [...prevMessages, data].sort((a, b) => a.date - b.date))
             })
         })
     }, [socket])
 
-    useEffect(() => {
-        setAllMessages((prevMessages) => [...prevMessages].sort((a, b) => a.date - b.date))
-    }, [allMessages])
+    // useEffect(() => {
+    //     setAllMessages((prevMessages) => [...prevMessages].sort((a, b) => a.date - b.date))
+    // }, [allMessages])
     
     useEffect(() => {
         axios.post("http://localhost:3001/verify", { token: localStorage.getItem("s_token")})
@@ -66,11 +66,11 @@ const ChatScreen = () => {
         const user = JSON.parse(sessionStorage.getItem('user'))
         if (user && chatWith.length !== 0){
             const dataToSend = {userId1: user.user_id, userId2: chatWith[1]}
-            console.log("🚀 ~ useEffect ~ dataToSend:", dataToSend)
             axios.post('http://localhost:3001/api/get_messages', dataToSend)
             .then((messages) => {
-                if (messages.data != "Empty")
-                    setAllMessages([messages.data])
+                console.log("🚀 ~ .then ~ messages: Here", messages)
+                if (messages.data != "Empty"){
+                    setAllMessages([messages.data].sort((a, b) => a.date - b.date))}
                 else
                     setAllMessages([])
             })
@@ -111,8 +111,14 @@ const ChatScreen = () => {
             }
 
             socket.emit("sendMessage", messageToSend);
-            setAllMessages((prevMessages) => [...prevMessages, messageToSend])
-            console.log("🚀 ~ handleSendMessage ~ allMessages:", allMessages)
+            axios.post('http://localhost:3001/api/send_message', {userId1: user.user_id, userId2: chatWith[1], message: message})
+            .then((res) => {
+                console.log("🚀 ~ .then ~ res:", res)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+            setAllMessages((prevMessages) => [...prevMessages, messageToSend].sort((a, b) => a.date - b.date))
         }
     };
 
