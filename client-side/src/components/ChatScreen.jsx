@@ -70,7 +70,7 @@ const ChatScreen = () => {
             .then((messages) => {
                 console.log("🚀 ~ .then ~ messages: Here", messages)
                 if (messages.data != "Empty"){
-                    setAllMessages([messages.data].sort((a, b) => a.date - b.date))}
+                    setAllMessages(messages.data.sort((a, b) => a.date - b.date))}
                 else
                     setAllMessages([])
             })
@@ -104,14 +104,14 @@ const ChatScreen = () => {
         if (recepiant) {
             const date = new Date()
             const messageToSend = {
-                receiverId: recepiant.userId,
                 senderId: user.username,
+                receiverId: recepiant.userId,
                 message: message,
                 date: date
             }
 
             socket.emit("sendMessage", messageToSend);
-            axios.post('http://localhost:3001/api/send_message', {userId1: user.user_id, userId2: chatWith[1], message: message})
+            axios.post('http://localhost:3001/api/send_message', {userId1: user.user_id, userId2: chatWith[1], messageToSend})
             .then((res) => {
                 console.log("🚀 ~ .then ~ res:", res)
             })

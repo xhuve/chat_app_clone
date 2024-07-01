@@ -93,14 +93,20 @@ app.post("/api/get_messages", async (req, res) => {
 
 app.post("/api/send_message", async (req, res) => {
     try {
-        const messages = await getMessagesDB(req.body.userId1, req.body.userId2)
+        const { senderId, receiverId, message, date } = req.body.messageToSend;
+        const newMessage = { senderId: senderId, message: message, date: date };
+        const existingMessages = await getMessagesDB(req.body.userId1, req.body.userId2)
+        console.log("🚀 ~ app.post ~ existingMessages:", existingMessages)
+        console.log("🚀 ~ app.post ~ newMessage:", newMessage)
+
+
         let result;
-        if (messages[0].length === 0) {
-             console.log("Creating message")
-            result = await createMessageDB(req.body.userId1, req.body.userId2, req.body.message)
+        if (existingMessages[0].length === 0) {
+            console.log("Creating message")
+            result = await createMessageDB(req.body.userId1, req.body.userId2, newMessage)
         } else {
             console.log("Updating message")
-            result = await updateMessageDB(req.body.userId1, req.body.userId2, req.body.message)
+            result = await updateMessageDB(req.body.userId1, req.body.userId2, newMessage)
         }
         res.status(200).send(result[0])
     } catch (error) {

@@ -38,7 +38,8 @@ export const getFriendsDB = async (userid) => {
 }
 
 export const createMessageDB = async (user1, user2, message) => {
-    const res = await pool.query(`INSERT INTO Messages (userId1, userId2, messages) VALUES (${user1}, ${user2}, '${JSON.stringify(message)}')`);
+    const msgToSet = [message]
+    const res = await pool.query(`INSERT INTO Messages (userId1, userId2, messages) VALUES (${user1}, ${user2}, '${JSON.stringify(msgToSet)}')`);
     return res;
 }
 
@@ -53,12 +54,17 @@ export const getMessagesDB = async (user1, user2) => {
 }
 
 export const updateMessageDB = async (user1, user2, message) => {
-    const res = await pool.query(`
-        UPDATE Messages
-        SET messages = '${JSON.stringify(message)}'
-        WHERE (userId1 = ${user1} AND userId2 = ${user2}) OR (userId1 = ${user2} AND userId2 = ${user1})
-    `);
+    const [existingMessages] = await getMessagesDB(user1, user2);
 
+    const currentMessages = JSON.parse(existingMessages[0].messages);
+    currentMessages.push(message);
+    console.log("🚀 ~ updateMessageDB ~ currentMessages:", currentMessages)
+
+    const [res] = await pool.query(`
+        UPDATE Messages 
+        SET messages = ? 
+        WHERE (userId1 = ? AND userId2 = ?) OR (userId1 = ? AND userId2 = ?)
+    `, [JSON.stringify(currentMessages), user1, user2, user2, user1]);
     return res;
 }
 
